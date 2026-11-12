@@ -7,6 +7,8 @@ import es.esports.dao.TorneoDAO;
 import es.esports.excepciones.DAOException;
 import es.esports.excepciones.DuplicadoException;
 import es.esports.excepciones.NoEncontradoException;
+import es.esports.excepciones.reglaNegocioException.CampoObligatorioException;
+import es.esports.excepciones.reglaNegocioException.DatoInvalidoException;
 import es.esports.excepciones.reglaNegocioException.ReglaDeNegocioException;
 import es.esports.modelo.*;
 import es.esports.sistema.GestorFicheros;
@@ -40,7 +42,7 @@ public class Menu {
                     + (e.getCause() != null ? " (" + e.getCause().getMessage() + ")" : ""));
         } else if (e instanceof IOException) {
             System.out.println("Error de ficheros: " + e.getMessage());
-        } else if (e instanceof RuntimeException) {
+        } else if (e instanceof DatoInvalidoException) {
             System.out.println("Dato no válido: " + e.getMessage());
         } else {
             System.out.println("Error inesperado: " + e.getMessage());
@@ -597,14 +599,14 @@ public class Menu {
         }
     }
 
-    private void moverFichero() throws IOException {
+    private void moverFichero() throws IOException, CampoObligatorioException {
         File fichero = new File(leerTexto("Ruta del fichero a mover: "));
         File destino = new File(leerTexto("Carpeta destino (se crea si no existe): "));
         GestorFicheros.moverFichero(fichero, destino);
         System.out.println("Fichero movido a " + destino + ".");
     }
 
-    private void renombrarCarpeta() throws IOException {
+    private void renombrarCarpeta() throws IOException, CampoObligatorioException {
         File carpeta = new File(leerTexto("Ruta de la carpeta a renombrar: "));
         String nuevoNombre = leerTexto("Nuevo nombre: ");
         GestorFicheros.renombrarCarpeta(carpeta, nuevoNombre);

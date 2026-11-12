@@ -1,9 +1,6 @@
 package es.esports.modelo;
 
-import es.esports.excepciones.reglaNegocioException.JugadorIncompatibleException;
-import es.esports.excepciones.reglaNegocioException.JuegoIncompatibleException;
-import es.esports.excepciones.reglaNegocioException.PlantillaLlenaException;
-import es.esports.excepciones.reglaNegocioException.ResultadoInvalidoException;
+import es.esports.excepciones.reglaNegocioException.*;
 
 
 import java.time.LocalDate;
@@ -44,21 +41,21 @@ public class Partida {
      * @param equipo2 nombre del segundo equipo; no puede estar vacío ni ser el mismo que el primero
      * @param fecha   fecha ({@code aaaa-mm-dd})
      * @param juego   juego de la partida; no puede ser {@code null}
-     * @throws IllegalArgumentException si algún argumento no es válido
+     * @throws CampoObligatorioException si algún argumento no es válido
      */
-    public Partida(String torneo, String equipo1, String equipo2, String fecha, Juego juego) {
+    public Partida(String torneo, String equipo1, String equipo2, String fecha, Juego juego) throws CampoObligatorioException, PartidaInvalidaException, FechaInvalidaException {
         setTorneo(torneo);
         if (equipo1 == null || equipo1.isBlank() || equipo2 == null || equipo2.isBlank()) {
-            throw new IllegalArgumentException("Los dos equipos son obligatorios");
+            throw new CampoObligatorioException("Los dos equipos son obligatorios");
         }
         if (equipo1.trim().equalsIgnoreCase(equipo2.trim())) {
-            throw new IllegalArgumentException("Un equipo no puede jugar contra si mismo");
+            throw new PartidaInvalidaException("Un equipo no puede jugar contra si mismo");
         }
         this.equipo1 = equipo1.trim();
         this.equipo2 = equipo2.trim();
         setFecha(fecha);
         if (juego == null) {
-            throw new IllegalArgumentException("El juego es obligatorio");
+            throw new CampoObligatorioException("El juego es obligatorio");
         }
         this.juego = juego;
         this.estado = EstadoPartida.PENDIENTE;
@@ -79,9 +76,9 @@ public class Partida {
      * @throws IllegalArgumentException   si el jugador es {@code null} o ya está en la partida
      */
     public void anadirJugador(Jugador jugador)
-            throws JugadorIncompatibleException, PlantillaLlenaException, JuegoIncompatibleException {
+            throws JugadorIncompatibleException, PlantillaLlenaException, JuegoIncompatibleException, CampoObligatorioException, PartidaInvalidaException {
         if (jugador == null) {
-            throw new IllegalArgumentException("El jugador no puede ser null");
+            throw new CampoObligatorioException("El jugador no puede ser null");
         }
         if (jugador.getJuego() != juego) {
             throw new JuegoIncompatibleException("El jugador " + jugador.getNickname() + " no juega a " + juego);
@@ -93,7 +90,7 @@ public class Partida {
 
         //Si el jugador que estamos añadiendo ya está en la lista de jugadores 1 o en la lista de jugadores 2, no se añade.
         if (estaEn(jugadores1, jugador.getNickname()) || estaEn(jugadores2, jugador.getNickname())) {
-            throw new IllegalArgumentException("El jugador ya está en la partida: " + jugador.getNickname());
+            throw new PartidaInvalidaException("El jugador ya está en la partida: " + jugador.getNickname());
         }
 
         //Ahora si el jugador ha pasado todos las comprobaciones hasta ahora, comprobamos si el jugador pertenece al equipo de alguno de los que se va a enfrentar en la partida.
@@ -157,17 +154,17 @@ public class Partida {
     //Simplemente comprobamos en el setID si es un numero positivo.
 
     public int getId() { return id; }
-    public void setId(int id) {
+    public void setId(int id) throws ValorFueraDeRangoException {
         if (id <= 0) {
-            throw new IllegalArgumentException("El id de la partida debe ser positivo");
+            throw new ValorFueraDeRangoException("El id de la partida debe ser positivo");
         }
         this.id = id;
     }
 
     public String getTorneo() { return torneo; }
-    public void setTorneo(String torneo) {
+    public void setTorneo(String torneo) throws CampoObligatorioException {
         if (torneo == null || torneo.isBlank()) {
-            throw new IllegalArgumentException("El torneo es obligatorio");
+            throw new CampoObligatorioException("El torneo es obligatorio");
         }
         this.torneo = torneo.trim();
     }
@@ -183,14 +180,14 @@ public class Partida {
     //necesita estos dos de abajo
 
     /** Restaura la alineación del equipo 1 al leer la partida del fichero. Lo usa el DAO. */
-    public void setJugadores1(List<String> nicknames) {
-        if (nicknames == null) throw new IllegalArgumentException("La alineación no puede ser null");
+    public void setJugadores1(List<String> nicknames) throws CampoObligatorioException {
+        if (nicknames == null) throw new CampoObligatorioException("La alineación no puede ser null");
         jugadores1 = new ArrayList<>(nicknames);
     }
 
     /** Restaura la alineación del equipo 2 al leer la partida del fichero. Lo usa el DAO. */
-    public void setJugadores2(List<String> nicknames) {
-        if (nicknames == null) throw new IllegalArgumentException("La alineación no puede ser null");
+    public void setJugadores2(List<String> nicknames) throws CampoObligatorioException {
+        if (nicknames == null) throw new CampoObligatorioException("La alineación no puede ser null");
         jugadores2 = new ArrayList<>(nicknames);
     }
 
@@ -204,16 +201,16 @@ public class Partida {
      * Establece la fecha de la partida.
      *
      * @param fecha fecha con formato {@code aaaa-mm-dd}
-     * @throws IllegalArgumentException si está vacía o no es una fecha real
+     * @throws CampoObligatorioException si está vacía o no es una fecha real
      */
-    public void setFecha(String fecha) {
+    public void setFecha(String fecha) throws CampoObligatorioException, FechaInvalidaException {
         if (fecha == null || fecha.isBlank()) {
-            throw new IllegalArgumentException("La fecha es obligatoria");
+            throw new CampoObligatorioException("La fecha es obligatoria");
         }
         try {
             LocalDate.parse(fecha.trim());   // solo comprueba que sea una fecha real (aaaa-mm-dd)
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Fecha no válida (usa aaaa-mm-dd): " + fecha);
+            throw new FechaInvalidaException("Fecha no válida (usa aaaa-mm-dd): " + fecha);
         }
         this.fecha = fecha.trim();
     }

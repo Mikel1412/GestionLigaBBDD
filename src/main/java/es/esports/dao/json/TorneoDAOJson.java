@@ -39,7 +39,7 @@ public class TorneoDAOJson implements TorneoDAO {
     public TorneoDAOJson(File fichero, EquipoDAO equipoDAO, JugadorDAO jugadorDAO, PartidaDAO partidaDAO)
             throws DAOException {
         if (fichero == null) {
-            throw new IllegalArgumentException("El fichero no puede ser null");
+            throw new CampoObligatorioException("El fichero no puede ser null");
         }
         this.fichero = fichero;
         this.equipoDAO = equipoDAO;
@@ -143,9 +143,9 @@ public class TorneoDAOJson implements TorneoDAO {
 
     // Valida los argumentos de texto que llegan de fuera (leer, borrar, inscribirEquipo...)
     // y los devuelve sin espacios a los lados.
-    private String limpiarTexto(String texto) {
+    private String limpiarTexto(String texto) throws CampoObligatorioException {
         if (texto == null || texto.isBlank()) {
-            throw new IllegalArgumentException("El texto no puede estar vacío");
+            throw new CampoObligatorioException("El texto no puede estar vacío");
         }
         return texto.trim();
     }
@@ -155,7 +155,7 @@ public class TorneoDAOJson implements TorneoDAO {
 
         //El dato a introducir no puede ser null, osea que lanzariamos una excepcion en caso de que si fuera null.
         if (torneo == null) {
-            throw new IllegalArgumentException("El torneo no puede ser null");
+            throw new CampoObligatorioException("El torneo no puede ser null");
         }
 
         //cargamos la lista de torneos
@@ -191,7 +191,7 @@ public class TorneoDAOJson implements TorneoDAO {
     @Override
     public void actualizar(Torneo torneo) throws NoEncontradoException, DAOException {
         if (torneo==null) {
-            throw new IllegalArgumentException("El torneo no puede ser null");
+            throw new CampoObligatorioException("El torneo no puede ser null");
         }
 
         List<Torneo> torneos = cargar();
@@ -329,7 +329,7 @@ public class TorneoDAOJson implements TorneoDAO {
     @Override
     public List<Torneo> torneosPorJuego(Juego juego) throws DAOException {
         if (juego==null) {
-            throw new IllegalArgumentException("El juego no puede ser null");
+            throw new CampoObligatorioException("El juego no puede ser null");
         }
         List<Torneo> torneos = cargar();
         List<Torneo> nueva = new ArrayList<>();
@@ -344,7 +344,7 @@ public class TorneoDAOJson implements TorneoDAO {
     @Override
     public List<Torneo> torneosPorEstado(EstadoTorneo estado) throws DAOException {
         if (estado==null) {
-            throw new IllegalArgumentException("El estado no puede ser null");
+            throw new CampoObligatorioException("El estado no puede ser null");
         }
         List<Torneo> torneos = cargar();
         List<Torneo> nueva = new ArrayList<>();

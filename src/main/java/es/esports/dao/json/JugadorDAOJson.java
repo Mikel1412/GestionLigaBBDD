@@ -4,10 +4,7 @@ import es.esports.dao.JugadorDAO;
 import es.esports.excepciones.DAOException;
 import es.esports.excepciones.DuplicadoException;
 import es.esports.excepciones.NoEncontradoException;
-import es.esports.excepciones.reglaNegocioException.JuegoIncompatibleException;
-import es.esports.excepciones.reglaNegocioException.JugadorSinEquipoException;
-import es.esports.excepciones.reglaNegocioException.JugadorYaFichadoException;
-import es.esports.excepciones.reglaNegocioException.PlantillaLlenaException;
+import es.esports.excepciones.reglaNegocioException.*;
 import es.esports.modelo.Equipo;
 import es.esports.modelo.Juego;
 import es.esports.modelo.Jugador;
@@ -33,7 +30,7 @@ public class JugadorDAOJson implements JugadorDAO {
 
     public JugadorDAOJson(File fichero) throws DAOException {
         if (fichero == null) {
-            throw new IllegalArgumentException("La ruta del fichero no puede ser null");
+            throw new CampoObligatorioException("La ruta del fichero no puede ser null");
         }
         this.fichero = fichero;
 
@@ -137,7 +134,7 @@ public class JugadorDAOJson implements JugadorDAO {
     //================Metodos Auxiliares=============
 
     private void asignarEquipo(List<Jugador> jugadores, Jugador jugador, Equipo equipo)
-            throws JuegoIncompatibleException, PlantillaLlenaException {
+            throws JuegoIncompatibleException, PlantillaLlenaException, CampoObligatorioException {
         if (jugador.getJuego() != equipo.getJuego()) {
             throw new JuegoIncompatibleException("El jugador " + jugador.getNickname() + " juega a "
                     + jugador.getJuego() + " y el equipo " + equipo.getNombre() + " es de " + equipo.getJuego());
@@ -171,9 +168,9 @@ public class JugadorDAOJson implements JugadorDAO {
         return -1;
     }
 
-    private String limpiarTexto(String texto) {
+    private String limpiarTexto(String texto) throws CampoObligatorioException {
         if (texto == null || texto.isBlank()) {
-            throw new IllegalArgumentException("El texto no puede estar vacío");
+            throw new CampoObligatorioException("El texto no puede estar vacío");
         }
         return texto.trim();
     }
@@ -181,15 +178,15 @@ public class JugadorDAOJson implements JugadorDAO {
     @Override
     public void crearJugador(Jugador jugador) throws DuplicadoException, DAOException {
         if (jugador == null) {
-            throw new IllegalArgumentException("El jugador no puede ser NULO");
+            throw new CampoObligatorioException("El jugador no puede ser NULO");
         }
         if (jugador.getEquipo() != null) {
-            throw new IllegalArgumentException("Un jugador nuevo se crea sin equipo: usa ficharPorEquipo");
+            throw new CampoObligatorioException("Un jugador nuevo se crea sin equipo: usa ficharPorEquipo");
         }
 
         List<Jugador> jugadores = cargar();
         if (buscarPosicion(jugadores, jugador.getNickname()) != -1) {
-            throw new DuplicadoException("jugador " +jugador.getNickname());
+            throw new JugadorYaFichadoException("jugador " +jugador.getNickname());
         }
         jugadores.add(jugador);
         guardar(jugadores);
@@ -217,7 +214,7 @@ public class JugadorDAOJson implements JugadorDAO {
     @Override
     public void actualizarJugador(Jugador jugador) throws NoEncontradoException, DAOException {
         if (jugador == null) {
-            throw new IllegalArgumentException("El jugador no puede ser NULO");
+            throw new CampoObligatorioException("El jugador no puede ser NULO");
         }
 
         List<Jugador> jugadores = cargar();
@@ -288,7 +285,7 @@ public class JugadorDAOJson implements JugadorDAO {
     @Override
     public List<Jugador> buscarJugadorPorJuego(Juego juego) throws DAOException {
         if (juego == null) {
-            throw new IllegalArgumentException("El juego no puede ser NULO");
+            throw new CampoObligatorioException("El juego no puede ser NULO");
         }
         List<Jugador> jugadores = cargar();
 
@@ -311,7 +308,7 @@ public class JugadorDAOJson implements JugadorDAO {
             throws NoEncontradoException, JugadorYaFichadoException, JuegoIncompatibleException,
             PlantillaLlenaException, DAOException {
         if (equipo == null) {
-            throw new IllegalArgumentException("El equipo no puede ser NULO");
+            throw new CampoObligatorioException("El equipo no puede ser NULO");
         }
         String nick = limpiarTexto(nickname);
 
@@ -355,7 +352,7 @@ public class JugadorDAOJson implements JugadorDAO {
             throws NoEncontradoException, JugadorSinEquipoException, JugadorYaFichadoException,
             JuegoIncompatibleException, PlantillaLlenaException, DAOException {
         if (nuevoEquipo == null) {
-            throw new IllegalArgumentException("El equipo no puede ser NULO");
+            throw new CampoObligatorioException("El equipo no puede ser NULO");
         }
         String nick = limpiarTexto(nickname);
 

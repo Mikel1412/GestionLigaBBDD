@@ -3,6 +3,8 @@ package es.esports.dao.json;
 import es.esports.dao.PartidaDAO;
 import es.esports.excepciones.DAOException;
 import es.esports.excepciones.NoEncontradoException;
+import es.esports.excepciones.reglaNegocioException.CampoObligatorioException;
+import es.esports.excepciones.reglaNegocioException.ValorFueraDeRangoException;
 import es.esports.modelo.EstadoPartida;
 import es.esports.modelo.Juego;
 import es.esports.modelo.Partida;
@@ -33,7 +35,7 @@ public class PartidaDAOJson implements PartidaDAO{
 
     public PartidaDAOJson(File fichero) throws DAOException {
         if (fichero == null) {
-            throw new IllegalArgumentException("La ruta del fichero no puede ser null");
+            throw new CampoObligatorioException("La ruta del fichero no puede ser null");
         }
         this.fichero = fichero;
 
@@ -157,16 +159,16 @@ public class PartidaDAOJson implements PartidaDAO{
 
 
 
-    private String limpiarTexto(String texto) {
+    private String limpiarTexto(String texto) throws CampoObligatorioException {
         if (texto == null || texto.isBlank()) {
-            throw new IllegalArgumentException("El texto no puede estar vacío");
+            throw new CampoObligatorioException("El texto no puede estar vacío");
         }
         return texto.trim();
     }
 
-    private void validarId(int id) {
+    private void validarId(int id) throws CampoObligatorioException, ValorFueraDeRangoException {
         if (id <= 0) {
-            throw new IllegalArgumentException("El id de la partida debe ser positivo");
+            throw new ValorFueraDeRangoException("El id de la partida debe ser positivo");
         }
     }
 
@@ -175,7 +177,7 @@ public class PartidaDAOJson implements PartidaDAO{
     @Override
     public void crear(Partida partida) throws DAOException {
         if (partida == null) {
-            throw new IllegalArgumentException("No puede ser NULA la partida");
+            throw new CampoObligatorioException("No puede ser NULA la partida");
         }
 
         List<Partida> partidas = cargar();
@@ -206,7 +208,7 @@ public class PartidaDAOJson implements PartidaDAO{
     @Override
     public void actualizar(Partida partida) throws NoEncontradoException, DAOException {
         if (partida == null) {
-            throw new IllegalArgumentException("No puede ser NULA la partida");
+            throw new CampoObligatorioException("No puede ser NULA la partida");
         }
         validarId(partida.getId());
 
@@ -267,7 +269,7 @@ public class PartidaDAOJson implements PartidaDAO{
     @Override
     public List<Partida> partidasPorEstado(EstadoPartida estado) throws DAOException {
         if (estado == null) {
-            throw new IllegalArgumentException("El estado no puede ser null");
+            throw new CampoObligatorioException("El estado no puede ser null");
         }
 
         List<Partida> resultado = new ArrayList<>();

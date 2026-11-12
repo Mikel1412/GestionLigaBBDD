@@ -1,5 +1,8 @@
 package es.esports.modelo;
 
+import es.esports.excepciones.reglaNegocioException.CampoObligatorioException;
+import es.esports.excepciones.reglaNegocioException.ValorFueraDeRangoException;
+
 /**
  * Un equipo de la liga, identificado por su nombre. Juega a un único juego y pertenece
  * a una organización (una organización puede tener un equipo por juego).
@@ -21,7 +24,7 @@ public class Equipo {
      * @param tag          abreviatura de 2 a 5 caracteres
      * @param juego        juego del equipo; no puede ser {@code null}
      * @param organizacion organización a la que pertenece; no puede estar vacía
-     * @throws IllegalArgumentException si algún argumento no es válido
+     * @throws CampoObligatorioException si algún argumento no es válido
      */
     public Equipo(String nombre, String tag, Juego juego, String organizacion) {
         setNombre(nombre);
@@ -34,9 +37,9 @@ public class Equipo {
         return nombre;
     }
 
-    public void setNombre(String nombre) {
+    public void setNombre(String nombre) throws CampoObligatorioException {
         if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException("El nombre del equipo es obligatorio");
+            throw new CampoObligatorioException("El nombre del equipo es obligatorio");
         }
         this.nombre = nombre.trim();
     }
@@ -49,15 +52,15 @@ public class Equipo {
      * Establece el tag del equipo.
      *
      * @param tag abreviatura de 2 a 5 caracteres
-     * @throws IllegalArgumentException si está vacío o su longitud no es de 2 a 5 caracteres
+     * @throws CampoObligatorioException si está vacío o su longitud no es de 2 a 5 caracteres
      */
-    public void setTag(String tag) {
+    public void setTag(String tag) throws CampoObligatorioException, ValorFueraDeRangoException {
         if (tag == null || tag.isBlank()) {
-            throw new IllegalArgumentException("El tag es obligatorio");
+            throw new CampoObligatorioException("El tag es obligatorio");
         }
         String limpio = tag.trim().toUpperCase();
         if (limpio.length() < 2 || limpio.length() > 5) {
-            throw new IllegalArgumentException("El tag debe tener entre 2 y 5 caracteres: " + tag);
+            throw new ValorFueraDeRangoException("El tag debe tener entre 2 y 5 caracteres: " + tag);
         }
         this.tag = limpio;
     }
@@ -66,9 +69,9 @@ public class Equipo {
         return juego;
     }
 
-    public void setJuego(Juego juego) {
+    public void setJuego(Juego juego) throws CampoObligatorioException{
         if (juego == null) {
-            throw new IllegalArgumentException("El juego es obligatorio");
+            throw new CampoObligatorioException("El juego es obligatorio");
         }
         this.juego = juego;
     }
@@ -77,9 +80,9 @@ public class Equipo {
         return organizacion;
     }
 
-    public void setOrganizacion(String organizacion) {
+    public void setOrganizacion(String organizacion) throws CampoObligatorioException {
         if (organizacion == null || organizacion.isBlank()) {
-            throw new IllegalArgumentException("La organización es obligatoria");
+            throw new CampoObligatorioException("La organización es obligatoria");
         }
         this.organizacion = organizacion.trim();
     }

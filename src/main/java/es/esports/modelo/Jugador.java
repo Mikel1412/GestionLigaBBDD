@@ -1,6 +1,8 @@
 package es.esports.modelo;
 
+import es.esports.excepciones.reglaNegocioException.CampoObligatorioException;
 import es.esports.excepciones.reglaNegocioException.RolInvalidoException;
+import es.esports.excepciones.reglaNegocioException.ValorFueraDeRangoException;
 
 /**
  * Un jugador de la liga (League of Legends o Valorant), identificado por su nickname.
@@ -42,10 +44,10 @@ public class Jugador {
      * @param rol2      segundo rol; obligatorio en League of Legends, opcional en Valorant
      * @param equipo    nombre del equipo, o {@code null} si es agente libre
      * @throws RolInvalidoException     si los roles no cumplen las reglas del juego
-     * @throws IllegalArgumentException si algún otro argumento no es válido
+     * @throws CampoObligatorioException si algún otro argumento no es válido
      */
     public Jugador(String nombre, String apellido1, String apellido2, String nickname,
-                   int edad, Juego juego, Rol rol1, Rol rol2, String equipo) throws RolInvalidoException {
+                   int edad, Juego juego, Rol rol1, Rol rol2, String equipo) throws RolInvalidoException, CampoObligatorioException, ValorFueraDeRangoException {
         setNombre(nombre);          //Todos estos sets son para las comprobaciones de datos erroneos como, nulls, en blanco, y luego si hay espacios sobrantes por los lados, hacer un trim() para limpiarlo.
         setApellido1(apellido1);
         setApellido2(apellido2);
@@ -62,22 +64,22 @@ public class Jugador {
      * Crea un jugador de Valorant con un solo rol. Equivale al constructor completo con {@code rol2 = null}.
      */
     public Jugador(String nombre, String apellido1, String apellido2, String nickname,
-                   int edad, Juego juego, Rol rol1, String equipo) throws RolInvalidoException {
+                   int edad, Juego juego, Rol rol1, String equipo) throws RolInvalidoException, ValorFueraDeRangoException, CampoObligatorioException {
         this(nombre, apellido1, apellido2, nickname, edad, juego, rol1, null, equipo);
     }
 
     public String getNombre() { return nombre; }
-    public void setNombre(String nombre) {
+    public void setNombre(String nombre) throws CampoObligatorioException {
         if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException("El nombre del jugador es obligatorio");
+            throw new CampoObligatorioException("El nombre del jugador es obligatorio");
         }
         this.nombre = nombre.trim();
     }
 
     public String getApellido1() { return apellido1; }
-    public void setApellido1(String apellido1) {
+    public void setApellido1(String apellido1) throws CampoObligatorioException {
         if (apellido1 == null || apellido1.isBlank()) {
-            throw new IllegalArgumentException("El primer apellido es obligatorio");
+            throw new CampoObligatorioException("El primer apellido es obligatorio");
         }
         this.apellido1 = apellido1.trim();
     }
@@ -92,25 +94,25 @@ public class Jugador {
     }
 
     public String getNickname() { return nickname; }
-    public void setNickname(String nickname) {
+    public void setNickname(String nickname) throws CampoObligatorioException {
         if (nickname == null || nickname.isBlank()) {
-            throw new IllegalArgumentException("El nickname es obligatorio");
+            throw new CampoObligatorioException("El nickname es obligatorio");
         }
         this.nickname = nickname.trim();
     }
 
     public int getEdad() { return edad; }
-    public void setEdad(int edad) {
+    public void setEdad(int edad) throws ValorFueraDeRangoException {
         if (edad < 16 || edad > 60) {
-            throw new IllegalArgumentException("La edad debe estar entre 16 y 60: " + edad);
+            throw new ValorFueraDeRangoException("La edad debe estar entre 16 y 60: " + edad);
         }
         this.edad = edad;
     }
 
     public Juego getJuego() { return juego; }
-    public void setJuego(Juego juego) {
+    public void setJuego(Juego juego) throws CampoObligatorioException {
         if (juego == null) {
-            throw new IllegalArgumentException("El juego es obligatorio");
+            throw new CampoObligatorioException("El juego es obligatorio");
         }
         this.juego = juego;
     }
@@ -156,14 +158,14 @@ public class Jugador {
      * Establece el equipo del jugador. Con {@code null} el jugador queda libre
      * y deja de ser titular.
      *
-     * @throws IllegalArgumentException si el nombre del equipo está vacío
+     * @throws CampoObligatorioException si el nombre del equipo está vacío
      */
-    public void setEquipo(String equipo) {
+    public void setEquipo(String equipo) throws CampoObligatorioException {
         if (equipo == null) {
             this.equipo = null;
             this.titular = false;      // un jugador libre no es titular de nadie porque no tiene equipo.
         } else if (equipo.isBlank()) {
-            throw new IllegalArgumentException("El nombre del equipo no puede estar vacío");
+            throw new CampoObligatorioException("El nombre del equipo no puede estar vacío");
         } else {
             this.equipo = equipo.trim();
         }

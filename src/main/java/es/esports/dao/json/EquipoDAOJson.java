@@ -4,6 +4,7 @@ import es.esports.dao.EquipoDAO;
 import es.esports.excepciones.DAOException;
 import es.esports.excepciones.DuplicadoException;
 import es.esports.excepciones.NoEncontradoException;
+import es.esports.excepciones.reglaNegocioException.CampoObligatorioException;
 import es.esports.modelo.Equipo;
 import es.esports.modelo.Juego;
 import jakarta.json.Json;
@@ -29,7 +30,7 @@ public class EquipoDAOJson implements EquipoDAO {
 
     public EquipoDAOJson(File fichero) throws DAOException {
         if (fichero == null) {
-            throw new IllegalArgumentException("La ruta del fichero no puede ser null");
+            throw new CampoObligatorioException("La ruta del fichero no puede ser null");
         }
         this.fichero = fichero;
 
@@ -117,9 +118,9 @@ public class EquipoDAOJson implements EquipoDAO {
     // ESTE METODO ES PARA LA PARTE DE COMPROBACIÓN DE ARGUMENTOS (Para no pasar argumentos erroneos).
     // ESTE METODO VALIDA LOS ARGUMENTOS DE TEXTO QUE LLEGAN DE FUERA (como leer, borrar, buscarPorNombre... etc)
 
-    private String limpiarTexto(String texto) {
+    private String limpiarTexto(String texto) throws CampoObligatorioException {
         if (texto == null || texto.isBlank()) {
-            throw new IllegalArgumentException("El texto no puede estar vacío");
+            throw new CampoObligatorioException("El texto no puede estar vacío");
         }
         return texto.trim();
     }
@@ -129,7 +130,7 @@ public class EquipoDAOJson implements EquipoDAO {
 
         //El dato a introducir no puede ser null, osea que lanzariamos una excepcion en caso de que si fuera null.
         if (equipo==null) {
-            throw new IllegalArgumentException("No puede ser NULO el equipo");
+            throw new CampoObligatorioException("No puede ser NULO el equipo");
         }
 
         //Primero tenemos que obtener la lista de los equipos que ya haya guardados
@@ -181,7 +182,7 @@ public class EquipoDAOJson implements EquipoDAO {
 
         //El dato a introducir no puede ser null, osea que lanzariamos una excepcion en caso de que si fuera null.
         if (equipo==null) {
-            throw new IllegalArgumentException("No puede ser NULO el equipo");
+            throw new CampoObligatorioException("No puede ser NULO el equipo");
         } else {
             //Primero cargamos los equipos
             List<Equipo> equipos = cargar();
@@ -240,7 +241,7 @@ public class EquipoDAOJson implements EquipoDAO {
 
         //El dato a introducir no puede ser null, osea que lanzariamos una excepcion en caso de que si fuera null.
         if (juego == null) {
-            throw new IllegalArgumentException("El juego no puede ser null");
+            throw new CampoObligatorioException("El juego no puede ser null");
         }
 
         //Cargamos la lista.
