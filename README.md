@@ -1,5 +1,5 @@
 # GestionLiga+BBDD
-## Comparación con el proyecto anterior
+## Comparación con el <a href="https://github.com/Mikel1412/GestionLiga">proyecto anterior<a/>
 Se continua mejorando la aplicación por lo que ahora debemos implementar el
 objeto DAO con BBDD.<br>
 Primero corregiremos tanto la interfaz DAO como el uso de excepciones en ella.<br>
